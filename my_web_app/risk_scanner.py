@@ -148,14 +148,20 @@ def show_risk_scanner(model, scaler):
                 prob = model.predict_proba(x_final)[0][1] * 100
                 
                 # New UI Result Logic
-                if prob >= 50:
-                    status = "ELEVATED RISK"
+                if prob >= 70:
+                    status = "High Risk"
                     color_hex = "#ff0a54"
                     glow = "0 0 40px rgba(255, 10, 84, 0.3)"
-                    msg = "Model detects patterns consistent with higher cardiovascular risk."
+                    msg = "Model detects patterns consistent with high cardiovascular risk."
+                    icon = "🚨"
+                elif prob >= 40:
+                    status = "Moderate Risk"
+                    color_hex = "#ffb703"
+                    glow = "0 0 40px rgba(255, 183, 3, 0.3)"
+                    msg = "Model detects patterns consistent with moderate cardiovascular risk."
                     icon = "⚠️"
                 else:
-                    status = "OPTIMAL RANGE"
+                    status = "Low Risk"
                     color_hex = "#0aff60"
                     glow = "0 0 40px rgba(10, 255, 96, 0.3)"
                     msg = "Bio-markers appear to be within healthy operating parameters."
@@ -164,13 +170,10 @@ def show_risk_scanner(model, scaler):
                 result_container.markdown(f"""
 <div class="glass-card" style="background: linear-gradient(180deg, {color_hex}11 0%, rgba(0,0,0,0) 100%); border: 1px solid {color_hex}44; text-align: center; border-radius: 12px; padding: 2rem; box-shadow: {glow}; animation: slideIn 0.5s ease-out;">
 <span style="font-size: 3rem; display: block; margin-bottom: 10px;">{icon}</span>
-<div style="font-size: 3.5rem; font-weight: 800; color: #fff; line-height: 1; text-shadow: 0 0 15px {color_hex};">
-{prob:.1f}%
+<div style="font-size: 2.5rem; font-weight: 800; color: #fff; line-height: 1.2; text-shadow: 0 0 15px {color_hex}; margin-bottom: 0.5rem;">
+{status}
 </div>
-<div style="color: {color_hex}; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 2px; margin-bottom: 1.5rem;">Risk Probability</div>
-<div style="background: rgba(255,255,255,0.05); padding: 12px; border-radius: 8px; margin-bottom: 1rem;">
-<span style="color: #cbd5e1; font-size: 0.9rem; font-weight: 600;">{status}</span>
-</div>
+<div style="color: {color_hex}; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 2px; margin-bottom: 1.5rem;">Risk Assessment</div>
 <p style="color: #94a3b8; font-size: 0.85rem; line-height: 1.5;">{msg}</p>
 <div style="margin-top: 1.5rem; padding-top: 1rem; border-top: 1px solid rgba(255,255,255,0.1); display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
     <div>
