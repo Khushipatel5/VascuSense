@@ -2,226 +2,224 @@ import os
 import streamlit as st
 import joblib
 
-st.markdown("""
-<style>
-
-/* ---------- HERO TITLE ---------- */
-.hero-title {
-    font-size: 4rem;
-    line-height: 1.1;
-    margin-bottom: 1rem;
-    text-align: left;
-    background: linear-gradient(to right, #00f2ff, #bc13fe);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    text-shadow: 0 0 40px rgba(188, 19, 254, 0.3);
-}
-
-
-/* ---------- GLASS CARD ---------- */
-.glass-card {
-    background: rgba(17, 25, 40, 0.75);
-    backdrop-filter: blur(16px) saturate(180%);
-    border: 1px solid rgba(255, 255, 255, 0.125);
-    border-radius: 16px;
-    padding: 2rem;
-    margin-bottom: 1.5rem;
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.37);
-    transition: 0.3s;
-}
-
-.glass-card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 12px 40px rgba(0, 242, 255, 0.1);
-}
-
-
-/* ---------- INPUT BOXES ---------- */
-.stTextInput input,
-.stNumberInput input,
-.stSelectbox div[data-baseweb="select"] {
-
-    background: rgba(255,255,255,0.05) !important;
-    border: 1px solid rgba(255,255,255,0.125) !important;
-    color: white !important;
-    border-radius: 8px !important;
-    transition: 0.3s;
-}
-
-.stTextInput input:focus,
-.stNumberInput input:focus,
-.stSelectbox div[data-baseweb="select"]:focus-within {
-
-    background: rgba(255,255,255,0.1) !important;
-    border-color: #00f2ff !important;
-    box-shadow: 0 0 12px rgba(0,242,255,0.3);
-}
-
-
-/* ---------- BUTTON ---------- */
-.stButton > button {
-
-    background: linear-gradient(90deg,#bc13fe,#00f2ff) !important;
-    color: black !important;
-    font-weight: 800 !important;
-    border-radius: 50px !important;
-    padding: 0.6rem 2rem !important;
-    text-transform: uppercase;
-    letter-spacing: 0.1em;
-    transition: 0.3s;
-    box-shadow: 0 0 20px rgba(0,242,255,0.4);
-}
-
-.stButton > button:hover {
-    transform: scale(1.05);
-    box-shadow: 0 0 40px rgba(0,242,255,0.6);
-    color: white !important;
-}
-
-
-/* ---------- RESULT BOX ---------- */
-.result-high {
-    border-color: #ff0a54 !important;
-    box-shadow: 0 0 40px rgba(255,10,84,0.4);
-}
-
-.result-safe {
-    border-color: #0aff60 !important;
-    box-shadow: 0 0 40px rgba(10,255,96,0.4);
-}
-
-</style>
-""", unsafe_allow_html=True)
-
-# ---------------- CONFIGURATION ---------------- #
 st.set_page_config(
-    page_title="VascuSense",
-    page_icon="🧬",
+    page_title="VascuSense — Heart Health",
+    page_icon="🫀",
     layout="wide",
     initial_sidebar_state="expanded"
 )
 
-# ---------------- SESSION STATE INIT ---------------- #
+st.markdown("""
+<style>
+@import url('https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&family=DM+Mono:wght@400;500&display=swap');
+
+:root {
+    --bg:         #090c09;
+    --surface:    #101410;
+    --surface-2:  #151a15;
+    --surface-3:  #1c231c;
+    --border:     rgba(255,255,255,0.055);
+    --border-hi:  rgba(180,210,140,0.2);
+    --accent:     #b4d28c;
+    --accent-dim: rgba(180,210,140,0.1);
+    --gold:       #d4a84b;
+    --gold-dim:   rgba(212,168,75,0.1);
+    --danger:     #e06060;
+    --warning:    #d4924a;
+    --safe:       #6abf82;
+    --text:       #dde8d0;
+    --sub:        #6a7c5e;
+    --muted:      #2e3d28;
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+html, body, [class*="css"] {
+    font-family: 'DM Sans', sans-serif !important;
+    background: var(--bg) !important;
+    color: var(--text) !important;
+}
+
+section[data-testid="stSidebar"] {
+    background: var(--surface) !important;
+    border-right: 1px solid var(--border) !important;
+}
+section[data-testid="stSidebar"] > div { padding: 0 !important; }
+
+section[data-testid="stSidebar"] .stButton > button {
+    background: transparent !important;
+    border: none !important;
+    border-left: 2px solid transparent !important;
+    border-radius: 0 !important;
+    color: var(--sub) !important;
+    font-family: 'DM Sans', sans-serif !important;
+    font-size: 1rem !important;
+    font-weight: 400 !important;
+    letter-spacing: 0.02em !important;
+    padding: 0.7rem 1.5rem !important;
+    text-align: left !important;
+    justify-content: flex-start !important;
+    box-shadow: none !important;
+    width: 100% !important;
+    transition: all 0.15s !important;
+}
+section[data-testid="stSidebar"] .stButton > button:hover {
+    background: var(--accent-dim) !important;
+    color: var(--accent) !important;
+    border-left: 2px solid var(--muted) !important;
+    transform: none !important; box-shadow: none !important;
+}
+section[data-testid="stSidebar"] .stButton > button:disabled {
+    background: var(--accent-dim) !important;
+    color: var(--accent) !important;
+    border-left: 2px solid var(--accent) !important;
+    opacity: 1 !important; font-weight: 500 !important;
+    cursor: default !important; box-shadow: none !important;
+}
+
+.stButton > button {
+    background: var(--accent) !important;
+    color: #080c08 !important;
+    font-family: 'DM Sans', sans-serif !important;
+    font-weight: 600 !important;
+    font-size: 1.1rem !important;
+    letter-spacing: 0.1em !important;
+    text-transform: uppercase !important;
+    border-radius: 5px !important;
+    padding: 0.65rem 1.6rem !important;
+    border: none !important;
+    box-shadow: 0 2px 16px rgba(180,210,140,0.2) !important;
+    transition: all 0.2s !important;
+    width: 100%;
+}
+.stButton > button:hover {
+    background: #c8e8a0 !important;
+    transform: translateY(-1px) !important;
+    box-shadow: 0 6px 24px rgba(180,210,140,0.3) !important;
+}
+
+.stNumberInput input, .stTextInput input {
+    background: var(--surface-2) !important;
+    border: 1px solid var(--border) !important;
+    color: var(--text) !important;
+    border-radius: 5px !important;
+    font-family: 'DM Sans', sans-serif !important;
+    font-size: 1.05rem !important;
+}
+.stNumberInput input:focus, .stTextInput input:focus {
+    border-color: var(--accent) !important;
+    box-shadow: 0 0 0 2px rgba(180,210,140,0.08) !important;
+}
+.stSelectbox > div > div {
+    background: var(--surface-2) !important;
+    border-color: var(--border) !important;
+    color: var(--text) !important;
+    border-radius: 5px !important;
+}
+
+.stSlider [data-baseweb="slider"] [role="slider"] {
+    background: var(--accent) !important;
+    border-color: var(--accent) !important;
+}
+
+.stInfo { background: var(--accent-dim) !important; border: 1px solid var(--border-hi) !important; border-radius: 6px !important; }
+.stSuccess { background: rgba(106,191,130,0.06) !important; border-color: rgba(106,191,130,0.2) !important; }
+.stError { background: rgba(224,96,96,0.06) !important; border-color: rgba(224,96,96,0.2) !important; }
+.stWarning { background: rgba(212,146,74,0.06) !important; border-color: rgba(212,146,74,0.2) !important; }
+
+[data-testid="metric-container"] {
+    background: var(--surface-2) !important;
+    border: 1px solid var(--border) !important;
+    border-radius: 8px !important;
+    padding: 1rem 1.2rem !important;
+}
+[data-testid="metric-container"] label {
+    color: var(--sub) !important; font-size: 1rem !important;
+    text-transform: uppercase !important; letter-spacing: 0.1em !important;
+}
+[data-testid="metric-container"] [data-testid="stMetricValue"] {
+    color: var(--text) !important; font-family: 'DM Serif Display', serif !important; font-size: 1.8rem !important;
+}
+
+h1, h2, h3, h4 { font-family: 'DM Serif Display', serif !important; color: var(--text) !important; font-weight: 400 !important; }
+hr { border-color: var(--border) !important; margin: 2rem 0 !important; }
+code { font-family: 'DM Mono', monospace !important; background: var(--surface-2) !important; border: 1px solid var(--border) !important; border-radius: 3px !important; padding: 1px 5px !important; color: var(--accent) !important; font-size: 0.85em !important; }
+.stCaption { color: var(--sub) !important; font-size: 1.1rem !important; letter-spacing: 0.04em !important; }
+
+.stTabs [data-baseweb="tab-list"] { background: var(--surface-2) !important; border-radius: 6px !important; padding: 3px !important; border: 1px solid var(--border) !important; }
+.stTabs [data-baseweb="tab"] { color: var(--sub) !important; font-family: 'DM Sans', sans-serif !important; background: transparent !important; border-radius: 4px !important; font-size: 1rem !important; }
+.stTabs [aria-selected="true"] { background: var(--surface) !important; color: var(--accent) !important; font-weight: 500 !important; }
+
+::-webkit-scrollbar { width: 3px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--muted); border-radius: 4px; }
+</style>
+""", unsafe_allow_html=True)
+
 if "page" not in st.session_state:
     st.session_state.page = "Dashboard"
 
-# ---------------- VISUAL IDENTITY ---------------- #
-st.markdown("""<style>
-    /* Global Button Width Fix */
-    .stButton > button {
-        width: 100%;
-    }
-
-    /* ---------------- SIDEBAR NAVIGATION STYLES ---------------- */
-    
-    /* Inactive Sidebar Buttons */
-    section[data-testid="stSidebar"] .stButton > button {
-        background: rgba(255, 255, 255, 0.02) !important;
-        border: 1px solid rgba(255, 255, 255, 0.05) !important;
-        color: #94a3b8 !important; /* Muted text */
-        font-weight: 500 !important;
-        text-transform: none !important; /* Normal case for nicer reading */
-        letter-spacing: 0.05em !important;
-        padding: 0.75rem 1.5rem !important;
-        border-radius: 12px !important;
-        text-align: left !important;
-        justify-content: flex-start !important; /* Align text left */
-        box-shadow: none !important;
-        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
-    }
-
-    /* Hover State for Sidebar Buttons */
-    section[data-testid="stSidebar"] .stButton > button:hover {
-        background: rgba(255, 255, 255, 0.08) !important;
-        border-color: rgba(0, 242, 255, 0.5) !important;
-        color: white !important;
-        transform: translateX(6px) !important; /* Slide effect */
-        box-shadow: -4px 0 15px rgba(0, 242, 255, 0.1) !important;
-    }
-
-    /* Active State (Disabled Button in Sidebar) */
-    section[data-testid="stSidebar"] .stButton > button:disabled {
-        background: linear-gradient(90deg, rgba(0, 242, 255, 0.15) 0%, transparent 100%) !important;
-        border: 1px solid #00f2ff !important;
-        color: #00f2ff !important;
-        opacity: 1 !important; /* Prevent default disabled fade */
-        font-weight: 700 !important;
-        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2) !important;
-        transform: none !important;
-        cursor: default !important;
-    }
-    
-    /* Focused State (Tapped) */
-    section[data-testid="stSidebar"] .stButton > button:focus {
-        background: rgba(0, 242, 255, 0.1) !important;
-        border-color: #00f2ff !important;
-        color: #00f2ff !important;
-        box-shadow: 0 0 15px rgba(0, 242, 255, 0.3) !important;
-    }
-
-    /* Active State (Pressed) */
-    section[data-testid="stSidebar"] .stButton > button:active {
-        background: rgba(0, 242, 255, 0.2) !important;
-        border-color: #00f2ff !important;
-        color: white !important;
-        transform: scale(0.98) translateX(6px) !important;
-    }
-
-</style>""", unsafe_allow_html=True)
-
-# ---------------- DATA / MODEL ---------------- #
 @st.cache_resource
 def load_engine():
     try:
         current_dir = os.path.dirname(os.path.abspath(__file__))
-        model_path = os.path.join(current_dir, "model.pkl")
-        scaler_path = os.path.join(current_dir, "scaler.pkl")
-        
-        model = joblib.load(model_path)
-        scaler = joblib.load(scaler_path)
+        model = joblib.load(os.path.join(current_dir, "model.pkl"))
+        scaler = joblib.load(os.path.join(current_dir, "scaler.pkl"))
         return model, scaler
     except:
         return None, None
 
 model, scaler = load_engine()
 
-# ---------------- SIDEBAR NAV ---------------- #
 with st.sidebar:
+    st.markdown("""
+    <div style="padding: 2rem 1.5rem 2rem; border-bottom: 1px solid rgba(255,255,255,0.05);">
+        <div style="display:flex; align-items:center; gap:10px; margin-bottom:0.4rem;">
+            <div style="width:32px; height:32px; background:linear-gradient(135deg,#b4d28c,#d4a84b); border-radius:8px; display:flex; align-items:center; justify-content:center; font-size:1rem; flex-shrink:0;">🫀</div>
+            <span style="font-family:'DM Serif Display',serif; font-size:1.35rem; color:#dde8d0; letter-spacing:-0.01em;">VascuSense</span>
+        </div>
+        <div style="font-size:1rem; color:#6a7c5e; letter-spacing:0.15em; text-transform:uppercase; padding-left:42px;">Heart Health Platform</div>
+    </div>
+    <div style="height:0.75rem;"></div>
+    """, unsafe_allow_html=True)
 
-    st.markdown("## 🧬 VascuSense")
-
-    def nav_button(label):
+    def nav_button(label, icon):
         if st.session_state.page == label:
-            st.button(label, disabled=True, key=label)
+            st.button(f"{icon}   {label}", disabled=True, key=label)
         else:
-            if st.button(label, key=label):
+            if st.button(f"{icon}   {label}", key=label):
                 st.session_state.page = label
                 st.rerun()
 
-    nav_button("Dashboard")
-    nav_button("Risk Scanner")
-    nav_button("Analytics Hub")
-    nav_button("Knowledge Base")
+    nav_button("Dashboard",        "◈")
+    nav_button("Risk Scanner",     "◎")
+    nav_button("Symptom Checker",  "◐")
+    nav_button("Analytics Hub",    "◇")
+    nav_button("Knowledge Base",   "◉")
+    nav_button("About",            "○")
+
+    st.markdown("""
+    <div style="margin-top:3rem; padding: 0 1.5rem; font-size:1rem; color:#2e3d28; letter-spacing:0.06em;">
+        v2.5.0 · 2026-02-11
+    </div>
+    """, unsafe_allow_html=True)
 
 page = st.session_state.page
 
-# ---------------- DASHBOARD ---------------- #
 if page == "Dashboard":
     from dashboard import show_dashboard
     show_dashboard()
-    
-# ---------------- RISK SCANNER ---------------- #
-
 elif page == "Risk Scanner":
     from risk_scanner import show_risk_scanner
     show_risk_scanner(model, scaler)
-
-# ---------------- ANALYTICS ---------------- #
+elif page == "Symptom Checker":
+    from symptom_checker import show_symptom_checker
+    show_symptom_checker()
 elif page == "Analytics Hub":
     from analysis import show_analysis
     show_analysis()
-
-# ---------------- KNOWLEDGE ---------------- #
 elif page == "Knowledge Base":
     from guidelines import show_guidelines
     show_guidelines()
+elif page == "About":
+    from about import show_about
+    show_about()
