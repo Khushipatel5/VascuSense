@@ -127,7 +127,7 @@ def show_dashboard():
 
     features = [
         ("🎂", "Age",              "As you get older, your risk naturally goes up, especially after age 45.",          "#b4d28c"),
-        ("⚧",  "Sex",              "Men and women face different heart risks because of how our bodies naturally work.",    "#d4a84b"),
+        ("⚧",  "Gender",              "Men and women face different heart risks because of how our bodies naturally work.",    "#d4a84b"),
         ("⚖️", "Height & Weight",  "These help us find your BMI, which shows if extra weight is putting stress on your heart.", "#6abf82"),
         ("💉", "Systolic BP",      "The top number in your blood pressure test. This is very important. Normal is under 120.", "#b4d28c"),
         ("💉", "Diastolic BP",     "The bottom number in your blood pressure test. Normal is under 80.",  "#d4a84b"),
