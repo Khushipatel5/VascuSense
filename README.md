@@ -56,6 +56,6 @@ python week_6_roc.py
 Khushi Patel
 
 ## License
-
+'''bash
 All rights reserved
-```
+'''
